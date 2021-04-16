@@ -14,7 +14,7 @@ public class MainDriver {
     public static void main(String [] args) {
 
         //config params
-        int docsToInsert = 4000000;
+        int docsToInsert = 3850000;
         int numParallelSearchesDringInsert = 15;
         String userName = "slr";
         String password = "Str0ngP@s5";
