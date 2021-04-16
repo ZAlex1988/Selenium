@@ -11,7 +11,8 @@ Alternatively Solr comes with the file by default as part of its tutorial.
 
 2. Solr v 8.1.1 is installed and running on localhost port 8983
 
-3. Movies collection is created with the following schema:
+3. Movies collection is created with the following schema (to view full schema please clone repo and view in editior -
+GitHub may have problems rendering the page with XML content):
 
 <?xml version="1.0" encoding="UTF-8"?>
 <schema name="Movies" version="1.6">
