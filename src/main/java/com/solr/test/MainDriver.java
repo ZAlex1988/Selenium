@@ -14,10 +14,10 @@ public class MainDriver {
     public static void main(String [] args) {
 
         //config params
-        int docsToInsert = 3850000;
-        int numParallelSearchesDringInsert = 15;
-        String userName = "slr";
-        String password = "Str0ngP@s5";
+        int docsToInsert = 15000000;
+        int numParallelSearchesDringInsert = 25;
+        String userName = "";
+        String password = "";
 
 
         //create objects
