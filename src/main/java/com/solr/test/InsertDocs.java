@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class InsertDocs {
@@ -35,12 +38,15 @@ public class InsertDocs {
     private Random rand = new Random();
     private String fileName = "C:\\FOSS\\solr-8.1.1\\solr-8.1.1\\example\\films\\films.csv";
 
+    private boolean parallelDone;
+    private long parallelStartTime;
+    private long parallelTotalTime;
+
     public InsertDocs() {
         log.info("Creating SolrClient...");
         setSolr();
         log.info("Client created - Success! Start Reading file...");
         List<String> fileContents = readCsvIntoMemory(fileName);
-        clearCollection();
         mapSolrDocs(fileContents);
     }
 
@@ -155,14 +161,31 @@ public class InsertDocs {
         }
     }
 
-    public void runQuery() {
-        SolrQuery q = new SolrQuery("*:*")
-                .setRows(50);
-        try {
-            QueryResponse resp = solr.query("Movies", q, SolrRequest.METHOD.POST);
-            resp.getResults().forEach(res -> log.info(res.getFieldValueMap()));
-        } catch (SolrServerException | IOException e) {
-            log.error("Unable to execute query: ", e);
-        }
+    public CloudSolrClient getSolr() {
+        return solr;
+    }
+
+    public void asyncInsert(int numDocsToInsert) {
+        int batches = numDocsToInsert / 1000;
+        log.info("Total batches to insert: " + batches);
+        this.parallelStartTime = System.currentTimeMillis();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            for (int i = 0; i < batches ; i++) {
+                this.insertBatch();
+                log.debug("Batched inserted so far: " + (i+1));
+            }
+            this.parallelDone = true;
+            this.parallelTotalTime = System.currentTimeMillis() - this.parallelStartTime;
+        });
+    }
+
+    public boolean isParallelDone() {
+        return parallelDone;
+    }
+
+    //returns time is seconds for async insert
+    public long getParallelTotalTime() {
+        return (parallelTotalTime/1000);
     }
 }
