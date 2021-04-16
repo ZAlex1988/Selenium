@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+//performs a single solr search from a randomly selected list of provided queries
 public class Searcher {
     private static final Logger log = LogManager.getLogger("appLogger");
     private List<String> queries = Arrays.asList("directed_by:Gary*", "genre:\"Black comedy\"",
