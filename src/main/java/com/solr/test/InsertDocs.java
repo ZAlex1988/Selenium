@@ -42,12 +42,18 @@ public class InsertDocs {
     private long parallelStartTime;
     private long parallelTotalTime;
 
-    public InsertDocs() {
+    private String user;
+    private String pass;
+
+    public InsertDocs(String user, String pass) {
+        this.user = user;
+        this.pass = pass;
         log.info("Creating SolrClient...");
         setSolr();
         log.info("Client created - Success! Start Reading file...");
         List<String> fileContents = readCsvIntoMemory(fileName);
         mapSolrDocs(fileContents);
+
     }
 
     private void mapSolrDocs(List<String> fileContents) {
@@ -77,13 +83,11 @@ public class InsertDocs {
     }
 
     private void setSolr() {
-        String user = "slr";
-        String pass = "Str0ngP@s5";
         List<String> zkHostUrl = Arrays.asList("localhost:9983");
         Optional<String> chRoot = Optional.empty();
         ModifiableSolrParams params = new ModifiableSolrParams();
-        params.set(HttpClientUtil.PROP_BASIC_AUTH_USER, user);
-        params.set(HttpClientUtil.PROP_BASIC_AUTH_PASS, pass);
+        params.set(HttpClientUtil.PROP_BASIC_AUTH_USER, this.user);
+        params.set(HttpClientUtil.PROP_BASIC_AUTH_PASS, this.pass);
         CloseableHttpClient httpClient = HttpClientUtil.createClient(params);
         solr = new CloudSolrClient.Builder(zkHostUrl, chRoot).withHttpClient(httpClient).build();
         solr.connect();
@@ -133,7 +137,7 @@ public class InsertDocs {
         try {
             UpdateRequest ur = new UpdateRequest();
             ur.deleteByQuery("*:*");
-            ur.setBasicAuthCredentials("slr", "Str0ngP@s5");
+            ur.setBasicAuthCredentials(this.user, this.pass);
             ur.process(solr, "Movies");
             solr.commit("Movies");
         }  catch (SolrServerException | IOException e) {
@@ -144,7 +148,7 @@ public class InsertDocs {
     public void insertBatch() {
         UpdateRequest ur = new UpdateRequest();
         ur.add(allDocs);
-        ur.setBasicAuthCredentials("slr", "Str0ngP@s5");
+        ur.setBasicAuthCredentials(this.user, this.pass);
         try {
             ur.process(solr, "Movies");
             solr.commit("Movies");

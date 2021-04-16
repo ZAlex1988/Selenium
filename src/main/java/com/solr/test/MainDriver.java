@@ -13,8 +13,8 @@ public class MainDriver {
 
     public static void main(String [] args) {
 
-        //create objects
-        InsertDocs inserter = new InsertDocs();
+        //create objects - provide username and a password!
+        InsertDocs inserter = new InsertDocs("", "");
         SearchDriver driver = new SearchDriver(10, inserter.getSolr());
 
         //start inserting and searching documents
