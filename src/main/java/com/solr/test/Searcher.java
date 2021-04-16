@@ -37,7 +37,7 @@ public class Searcher {
 
     public String runQuery(String query) {
         String status = "Success";
-        SolrQuery q = new SolrQuery("*:*")
+        SolrQuery q = new SolrQuery(query)
                 .setRows(100);
         try {
             QueryResponse resp = solr.query("Movies", q, SolrRequest.METHOD.POST);

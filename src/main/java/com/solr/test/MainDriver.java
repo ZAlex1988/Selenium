@@ -13,12 +13,19 @@ public class MainDriver {
 
     public static void main(String [] args) {
 
-        //create objects - provide username and a password!
-        InsertDocs inserter = new InsertDocs("", "");
-        SearchDriver driver = new SearchDriver(10, inserter.getSolr());
+        //config params
+        int docsToInsert = 4000000;
+        int numParallelSearchesDringInsert = 15;
+        String userName = "slr";
+        String password = "Str0ngP@s5";
+
+
+        //create objects
+        InsertDocs inserter = new InsertDocs(userName, password);
+        SearchDriver driver = new SearchDriver(numParallelSearchesDringInsert, inserter.getSolr());
 
         //start inserting and searching documents
-        inserter.asyncInsert(400000);
+        inserter.asyncInsert(docsToInsert);
         driver.startSearches();
 
         log.info("Driver is inserting and doing searches...");
@@ -37,7 +44,7 @@ public class MainDriver {
 
         log.info("Number of searches executed: " + stats.size());
         long numFailed = stats.stream().filter(res -> ! "Success".equalsIgnoreCase(res.getStatus())).count();
-        List<Long> allMillis = stats.stream().map(res -> res.getTimeTaken()).collect(Collectors.toList());
+        List<Long> allMillis = stats.stream().map(SearchStats::getTimeTaken).collect(Collectors.toList());
         OptionalDouble averageTime = allMillis.stream().mapToLong(Long::longValue).average();
 
         log.info("Number of Searches failed " + numFailed);
